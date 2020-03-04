@@ -2,13 +2,12 @@ require_relative 'station'
 require_relative 'route'
 
 class Train
-
   #Может возвращать текущую скорость, кол-во вагонов
   attr_reader :number, :type
   attr_accessor :speed, :length, :route
 
   #Имеет номер, тип, количество вагонов
-  def initialize number, type, length
+  def initialize(number, type, length)
     @number = number
     @type = type
     @length = length
@@ -18,18 +17,18 @@ class Train
 
   #Может набирать скорость
   def accelerate
-    self.speed += 10
+    @speed += 10
   end
 
   #Может тормозить
   def break
-    self.speed = 0
+    @speed = 0
   end
 
   #Может прицеплять вагоны, по одному, не на ходу
   def add_car
     if speed == 0
-      self.length += 1
+      @length += 1
       puts "1 car joined  train number #{self.number} "
     else
       puts 'Impossible to connect car under way.'
@@ -38,63 +37,57 @@ class Train
 
   #Может отцеплять вагоны, по одному, не на ходу
   def remove_car
-    unless length == 0
-      if speed == 0
-        self.length -= 1
-        puts "1 car removed from  train number #{self.number}."
-      else
-        puts 'Impossible to disconnect car under way.'
-      end
+    return puts 'No cars to disconnect.' if length == 0
+    if speed == 0
+      @length -= 1
+      puts "1 car removed from  train number #{number}."
     else
-      puts 'No cars to disconnect.'
+      puts 'Impossible to disconnect car under way.'
     end
   end
 
   # Может принимать маршрут следования
   # Не заводил переменную экземпляра @position в конструкторе так как она
   # все равно не работает, если не задан маршрут
-  def take_route route
+  def take_route(route)
     @route = route
-    @position = 0
+    route.station_list.first.train_arrive(self)
   end
 
   # Может перемещаться вперед
   def move_forward
-    if route != nil && @position < route.station_list.size
-      route.station_list[@position].train_depart self
-      @position += 1
-      route.station_list[@position].train_arrive self
-    else
-      puts 'Train can not move forward'
+    unless current_station == route.station_list.last
+      departure_station = current_station.train_depart(self)
+      puts route.station_list[route.station_list.index(departure_station) + 1].train_arrive(self)
     end
   end
 
   # Может перемещаться назад
   def move_backward
-    if route != nil && @position > 0
-      route.station_list[@position].train_depart self
-      @position -= 1
-      route.station_list[@position].train_arrive self
-    else
-      puts 'Train can not move backward'
+    unless current_station == route.station_list.first
+      departure_station = current_station.train_depart(self)
+      puts route.station_list[route.station_list.index(departure_station) - 1].train_arrive(self)
     end
   end
 
   # Может возвращать текущую позицию
-  def show_position
-    if route != nil
-      if @position == 0
-        puts "Current station: #{route.station_list[@position].name}"
-        puts "Next station: #{route.station_list[@position + 1].name}"
-      elsif @position == -1
-        puts "Previous station: #{route.station_list[@position - 1].name}"
-        puts "Current station: #{route.station_list[@position].name}"
-      else
-        puts "Previous station: #{route.station_list[@position - 1].name}"
-        puts "Current station: #{route.station_list[@position].name}"
-        puts "Next station: #{route.station_list[@position + 1].name}"
-      end
+  def current_station
+    route.station_list.find { |station| station.trains.include?(self) }
+  end
+
+  def next_station
+    unless current_station == route.station_list.last
+      route.station_list[route.station_list.index(current_station) + 1]
+    else
+      puts "End of route"
     end
   end
 
+  def previous_station
+    unless current_station == route.station_list.first
+      route.station_list[route.station_list.index(current_station) - 1]
+    else
+      puts "Begin of route"
+    end
+  end
 end
