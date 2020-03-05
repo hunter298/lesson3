@@ -3,8 +3,8 @@ require_relative 'route'
 
 class Train
   #Может возвращать текущую скорость, кол-во вагонов
-  attr_reader :number, :type
-  attr_accessor :speed, :length, :route
+  attr_reader :number, :type, :route
+  attr_accessor :speed, :length
 
   #Имеет номер, тип, количество вагонов
   def initialize(number, type, length)

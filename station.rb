@@ -2,8 +2,7 @@ require_relative 'train'
 require_relative 'route'
 
 class Station
-  attr_reader :name, :route
-  attr_accessor :trains, :cargo_trains, :pass_trains
+  attr_reader :name, :route,:trains
 
   def initialize(name)
     @name = name
