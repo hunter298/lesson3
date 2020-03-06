@@ -3,16 +3,16 @@ require_relative 'route'
 
 class Train
   #Может возвращать текущую скорость, кол-во вагонов
-  attr_reader :number, :type, :route
-  attr_accessor :speed, :length
+  attr_reader :number, :route, :cars, :type
+  attr_accessor :speed
 
   #Имеет номер, тип, количество вагонов
-  def initialize(number, type, length)
+  def initialize(number)
     @number = number
-    @type = type
-    @length = length
+    @cars = [] # cars.size to return quantity of wagons
     @speed = 0
     @route = nil
+    @@trains << self
   end
 
   #Может набирать скорость
@@ -26,20 +26,20 @@ class Train
   end
 
   #Может прицеплять вагоны, по одному, не на ходу
-  def add_car
-    if speed == 0
-      @length += 1
+  def add_car(car)
+    if speed == 0 && car.type == self.type
+      cars << car
       puts "1 car joined  train number #{self.number} "
     else
-      puts 'Impossible to connect car under way.'
+      puts 'Impossible to connect car'
     end
   end
 
   #Может отцеплять вагоны, по одному, не на ходу
-  def remove_car
-    return puts 'No cars to disconnect.' if length == 0
+  def remove_car(car)
+    return puts 'No cars to disconnect.' if cars.empty?
     if speed == 0
-      @length -= 1
+      cars.delete(car)
       puts "1 car removed from  train number #{number}."
     else
       puts 'Impossible to disconnect car under way.'
@@ -89,5 +89,13 @@ class Train
     else
       puts "Begin of route"
     end
+  end
+
+  protected
+
+  @@trains = []
+
+  def self.trains
+    @@trains
   end
 end

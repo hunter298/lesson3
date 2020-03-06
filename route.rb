@@ -4,6 +4,8 @@ require_relative 'station'
 class Route
   attr_reader :first_station, :last_station, :station_list
 
+  @@routes = []
+
   #Имеет начальную и конечную станции
   def initialize(first_station, last_station)
     @first_station = first_station
@@ -11,6 +13,7 @@ class Route
     #Имеет список промежуточных станций
     #Точнее список всех станций включая промежуточные
     @station_list = [@first_station, @last_station]
+    @@routes << self
   end
 
   #Может добавлять промежуточную станцию в список
@@ -27,5 +30,9 @@ class Route
   def show_route
     puts "Trains on route \"#{first_station.name} - #{last_station.name}\" attend stations:"
     station_list.each.with_index(1) { |station, index| puts "#{index}. #{station.name}" }
+  end
+
+  def self.routes
+    @@routes
   end
 end
