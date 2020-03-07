@@ -169,9 +169,4 @@ class Main
 
 end
 
-Main.interface
 
-puts PassengerTrain.instances
-puts CargoTrain.instances
-puts Station.instances
-puts Route.instances
