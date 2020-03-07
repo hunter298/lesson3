@@ -2,6 +2,9 @@ require_relative 'station'
 require_relative 'route'
 
 class Train
+  include Maker
+  include InstanceCounter
+
   #Может возвращать текущую скорость, кол-во вагонов
   attr_reader :number, :route, :cars, :type
   attr_accessor :speed
@@ -13,6 +16,7 @@ class Train
     @speed = 0
     @route = nil
     @@trains << self
+    register_instance
   end
 
   #Может набирать скорость
@@ -89,6 +93,12 @@ class Train
     else
       puts "Begin of route"
     end
+  end
+
+  # Принимает номер и возвращает обьект поезд с таким номером или nil если такого не существует
+  def self.find search_number
+    trains.each { |train| return train if train.number == search_number}
+    return nil
   end
 
   protected

@@ -1,5 +1,8 @@
+require_relative 'instance_counter'
+require_relative 'maker'
 require_relative 'station'
 require_relative 'train'
+require_relative 'car'
 require_relative 'pass_trian'
 require_relative 'cargo_train'
 require_relative 'pass_car'
@@ -16,12 +19,12 @@ class Main
 
     user_input = ''
     while user_input != 'exit'
-
       puts 'What would You like to do?'
       puts 'Enter "exit" to close program'
       puts options
-      user_input = gets.chomp.to_i
-      case user_input
+      user_input = gets.chomp
+      variant = user_input.to_i
+      case variant
       when 1
         create_station
       when 2
@@ -42,8 +45,6 @@ class Main
         train_move
       when 10
         station_browse
-      else
-        puts "You should choose number from 1 to 10"
       end
     end
   end
@@ -72,14 +73,14 @@ class Main
 
   def self.create_route
     puts 'Choose first station:'
-    Station.stations.each.with_index(1) { |station, number| puts "#{number}. #{station.name}" }
+    Station.all.each.with_index(1) { |station, number| puts "#{number}. #{station.name}" }
     first_station_number = gets.chomp.to_i
     puts 'Choose last station:'
-    Station.stations.each.with_index(1) do |station, number|
+    Station.all.each.with_index(1) do |station, number|
       puts "#{number}. #{station.name}" if number != first_station_number
     end
     last_station_number = gets.chomp.to_i
-    route = Route.new(Station.stations[first_station_number - 1], Station.stations[last_station_number - 1])
+    route = Route.new(Station.all[first_station_number - 1], Station.all[last_station_number - 1])
   end
 
   def self.route_add_station
@@ -89,13 +90,13 @@ class Main
     end
     route_number = gets.chomp.to_i - 1
     puts 'Choose station to add:'
-    Station.stations.each.with_index(1) do |station, number|
-      unless station == (Route.routes[route_number].first_station) || station == (Route.routes[route_number].last_station)
+    Station.all.each.with_index(1) do |station, number|
+      unless Route.routes[route_number].station_list.include?(station)
         puts "#{number}. #{station.name}"
       end
     end
     station_number = gets.chomp.to_i - 1
-    Route.routes[route_number].add_interim_station(Station.stations[station_number])
+    Route.routes[route_number].add_interim_station(Station.all[station_number])
   end
 
   def self.route_remove_station
@@ -156,12 +157,12 @@ class Main
 
   def self.station_browse
     puts 'Choose station to browse:'
-    Station.stations.each.with_index(1) do |station, number|
+    Station.all.each.with_index(1) do |station, number|
       puts "#{number}. #{station.name}"
     end
     station_number = gets.chomp.to_i - 1
     puts 'Following trains are at the station now:'
-    Station.stations[station_number].trains.each.with_index(1) do |train, number|
+    Station.all[station_number].trains.each.with_index(1) do |train, number|
       puts "#{number}. #{train.number}"
     end
   end
@@ -170,3 +171,7 @@ end
 
 Main.interface
 
+puts PassengerTrain.instances
+puts CargoTrain.instances
+puts Station.instances
+puts Route.instances

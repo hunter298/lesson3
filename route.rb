@@ -2,6 +2,8 @@ require_relative 'train'
 require_relative 'station'
 
 class Route
+  include InstanceCounter
+
   attr_reader :first_station, :last_station, :station_list
 
   @@routes = []
@@ -14,6 +16,7 @@ class Route
     #Точнее список всех станций включая промежуточные
     @station_list = [@first_station, @last_station]
     @@routes << self
+    register_instance
   end
 
   #Может добавлять промежуточную станцию в список

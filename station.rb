@@ -2,7 +2,9 @@ require_relative 'train'
 require_relative 'route'
 
 class Station
-  attr_reader :name, :route, :trains, :stations
+  include InstanceCounter
+
+  attr_reader :name, :route, :trains, :all
 
   @@stations = []
 
@@ -10,6 +12,7 @@ class Station
     @name = name
     @trains = []
     @@stations << self
+    register_instance
   end
 
   #Список поездов на станции в данный момент
@@ -40,7 +43,7 @@ class Station
     return self
   end
 
-  def self.stations
+  def self.all
     @@stations
   end
 
