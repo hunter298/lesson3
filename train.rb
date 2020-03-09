@@ -15,7 +15,7 @@ class Train
     @cars = [] # cars.size to return quantity of wagons
     @speed = 0
     @route = nil
-    @@trains << self
+    @@trains[number] = self
     register_instance
   end
 
@@ -97,13 +97,18 @@ class Train
 
   # Принимает номер и возвращает обьект поезд с таким номером или nil если такого не существует
   def self.find search_number
-    trains.each { |train| return train if train.number == search_number}
-    return nil
+    return @@trains[search_number]
+  end
+
+  def self.choose_from_list
+    Train.trains.each.with_index(1) { |train, number| puts "#{number}. #{train[1].number}" }
+    train_number = gets.chomp.to_i - 1
+    return Train.trains.to_a[train_number][1]
   end
 
   protected
 
-  @@trains = []
+  @@trains = {}
 
   def self.trains
     @@trains

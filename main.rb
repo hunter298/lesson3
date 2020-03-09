@@ -116,42 +116,38 @@ class Main
 
   def self.train_to_route
     puts 'What train You want to assign?'
-    Train.trains.each.with_index(1) { |train, number| puts "#{number}. #{train.number}" }
-    train_number = gets.chomp.to_i - 1
+    train = Train.choose_from_list
     puts 'On which route?'
     Route.routes.each.with_index(1) { |route, number| puts "#{number}. #{route.first_station.name} - #{route.last_station.name}" }
     route_number = gets.chomp.to_i - 1
-    Train.trains[train_number].take_route(Route.routes[route_number])
+    train.take_route(Route.routes[route_number])
   end
 
   def self.train_add_car
     puts 'What train You want to add car to?'
-    Train.trains.each.with_index(1) { |train, number| puts "#{number}. #{train.number}" }
-    train_number = gets.chomp.to_i - 1
-    if Train.trains[train_number].type == 'pass'
-      Train.trains[train_number].add_car(PassCar.new)
-    elsif Train.trains[train_number].type == 'cargo'
-      Train.trains[train_number].add_car(CargoCar.new)
+    train = Train.choose_from_list
+    if train.type == 'pass'
+      train.add_car(PassCar.new)
+    elsif train.type == 'cargo'
+      train.add_car(CargoCar.new)
     end
   end
 
   def self.train_remove_car
     puts 'What train You want to remove car from?'
-    Train.trains.each.with_index(1) { |train, number| puts "#{number}. #{train.number}" }
-    train_number = gets.chomp.to_i - 1
-    Train.trains[train_number].cars.pop
+    train = Train.choose_from_list
+    train.cars.pop
   end
 
   def self.train_move
     puts 'What train You want to move?'
-    Train.trains.each.with_index(1) { |train, number| puts "#{number}. #{train.number}" }
-    train_number = gets.chomp.to_i - 1
+    train = Train.choose_from_list
     puts '(1)Forward of (2)Backward?'
     fwd_or_back = gets.chomp.to_i
     if fwd_or_back == 1
-      Train.trains[train_number].move_forward
+      train.move_forward
     elsif fwd_or_back == 2
-      Train.trains[train_number].move_backward
+      train.move_backward
     end
   end
 
@@ -168,5 +164,3 @@ class Main
   end
 
 end
-
-

@@ -1,14 +1,17 @@
 module InstanceCounter
 
-
   def self.included(base)
     base.extend ClassMethods
     base.send :include, InstanceMethods
   end
 
-
   module ClassMethods
-    attr_accessor :instances
+    attr_writer :instances
+
+    def instances
+      return @instances unless @instances.class == NilClass
+      0
+    end
   end
 
   module InstanceMethods
@@ -20,7 +23,6 @@ module InstanceCounter
       end
     end
   end
-
 
 end
 
