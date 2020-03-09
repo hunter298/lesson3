@@ -100,12 +100,6 @@ class Train
     return @@trains[search_number]
   end
 
-  def self.choose_from_list
-    Train.trains.each.with_index(1) { |train, number| puts "#{number}. #{train[1].number}" }
-    train_number = gets.chomp.to_i - 1
-    return Train.trains.to_a[train_number][1]
-  end
-
   protected
 
   @@trains = {}
