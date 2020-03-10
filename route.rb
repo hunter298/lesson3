@@ -1,6 +1,3 @@
-require_relative 'train'
-require_relative 'station'
-
 class Route
   include InstanceCounter
 
@@ -17,6 +14,7 @@ class Route
     @station_list = [@first_station, @last_station]
     @@routes << self
     register_instance
+    validate!
   end
 
   #Может добавлять промежуточную станцию в список
@@ -38,4 +36,21 @@ class Route
   def self.routes
     @@routes
   end
+
+  def valid?
+    validate!
+    true
+  rescue
+    false
+  end
+
+  protected
+
+  def validate!
+    unless (first_station.is_a? Station) && (last_station.is_a? Station)
+    raise "Route can be created only between two Stations!"
+    end
+  end
 end
+
+

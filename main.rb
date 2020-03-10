@@ -54,8 +54,8 @@ class Main
   def self.create_station
     puts 'Enter station name:'
     station_name = gets.chomp
-    station = Station.new(station_name.capitalize)
-    puts "Station #{station_name} successfully created!"
+    station = Station.new(station_name)
+    puts "Station #{station_name} successfully created!\n\n"
   end
 
   def self.create_train
@@ -68,7 +68,12 @@ class Main
     elsif pass_or_cargo == 2
       train = CargoTrain.new(train_number)
     end
-    puts "Train #{train_number} constructed successfully!"
+    puts "Train #{train_number} constructed successfully!\n\n"
+  rescue StandardError => e
+    puts e.message
+    Train.trains.delete(train_number)
+    puts
+    create_train
   end
 
   def self.create_route
@@ -81,6 +86,7 @@ class Main
     end
     last_station_number = gets.chomp.to_i
     route = Route.new(Station.all[first_station_number - 1], Station.all[last_station_number - 1])
+    puts "Route created!\n\n"
   end
 
   def self.route_add_station
@@ -170,4 +176,4 @@ class Main
   end
 end
 
-
+Main.interface

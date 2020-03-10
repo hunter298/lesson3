@@ -1,6 +1,3 @@
-require_relative 'station'
-require_relative 'route'
-
 class Train
   include Maker
   include InstanceCounter
@@ -17,6 +14,7 @@ class Train
     @route = nil
     @@trains[number] = self
     register_instance
+    validate!
   end
 
   #Может набирать скорость
@@ -33,7 +31,6 @@ class Train
   def add_car(car)
     if speed == 0 && car.type == self.type
       cars << car
-      puts "1 car joined  train number #{self.number} "
     else
       puts 'Impossible to connect car'
     end
@@ -44,7 +41,6 @@ class Train
     return puts 'No cars to disconnect.' if cars.empty?
     if speed == 0
       cars.delete(car)
-      puts "1 car removed from  train number #{number}."
     else
       puts 'Impossible to disconnect car under way.'
     end
@@ -100,11 +96,25 @@ class Train
     return @@trains[search_number]
   end
 
+  def valid?
+    validate!
+    true
+  rescue
+    false
+  end
+
   protected
 
   @@trains = {}
+
+  NUMBER_FORMAT = /^\w{3}-?\w{2}$/
+
+  def validate!
+    raise "Wrong format! Should be XXX-XX" if number !~ NUMBER_FORMAT
+  end
 
   def self.trains
     @@trains
   end
 end
+

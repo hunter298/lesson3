@@ -1,6 +1,3 @@
-require_relative 'train'
-require_relative 'route'
-
 class Station
   include InstanceCounter
 
@@ -9,10 +6,12 @@ class Station
   @@stations = []
 
   def initialize(name)
-    @name = name
+    # Одно или два сдова с большой буквы
+    @name = (name.split(' ').each { |word| word.capitalize! }.join(' '))
     @trains = []
     @@stations << self
     register_instance
+    validate!
   end
 
   #Список поездов на станции в данный момент
@@ -33,13 +32,12 @@ class Station
   #Может принимать поезда
   def train_arrive(train)
     trains << train
-    puts "Train number #{train.number} arrived to station #{name}."
+    return nil
   end
 
   #Может отправлять поезда
   def train_depart(train)
     trains.delete(train)
-    puts "Train number #{train.number} departed from station #{name}."
     return self
   end
 
@@ -47,4 +45,23 @@ class Station
     @@stations
   end
 
+  def valid?
+    validate!
+    true
+  rescue
+    false
+  end
+
+  protected
+
+  # Название станции из одного или двух слов
+  STATION_FORMAT = /^[a-zA-Z]+\s?[a-zA-Z]*$/
+
+  def validate!
+    raise "Only letters!" if name =~ /\d/
+    raise "Too long! 15 letters max." if name.length > 15
+    raise "Wrong format! One or two words, only letter, not nil." if name !~ STATION_FORMAT
+  end
+
 end
+
