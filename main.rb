@@ -71,7 +71,6 @@ class Main
     puts "Train #{train_number} constructed successfully!\n\n"
   rescue StandardError => e
     puts e.message
-    Train.trains.delete(train_number)
     puts
     create_train
   end
@@ -177,3 +176,4 @@ class Main
 end
 
 Main.interface
+puts PassengerTrain.instances

@@ -13,8 +13,8 @@ class Train
     @speed = 0
     @route = nil
     @@trains[number] = self
-    register_instance
     validate!
+    register_instance
   end
 
   #Может набирать скорость
