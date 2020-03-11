@@ -2,7 +2,7 @@ class Car
   include Maker
   include InstanceCounter
 
-  def initialize
+  def initialize params
     register_instance
   end
 end

@@ -103,6 +103,13 @@ class Train
     false
   end
 
+
+  # Принимает блок и проходит по всем вагонам поезда, передавая каждый вагон в блок
+  def process_cars
+    cars.each { |car| yield(car) }
+    nil
+  end
+
   protected
 
   @@trains = {}

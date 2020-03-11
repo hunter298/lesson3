@@ -15,7 +15,7 @@ class Main
     puts 'Welcome to our railway simulator!'
     options = ['1. Create station', '2. Create train', '3. Create route', '4. Add station to route',
                '5. Remove station from route', '6. Assign train to route', '7. Add car to train',
-               '8. Remove car from train', '9. Move train', '10. Browse through stations and trains']
+               '8. Remove car from train', '9. Move train', '10. Stations overview', '11. Trains overview']
 
     user_input = ''
     while user_input != 'exit'
@@ -44,7 +44,9 @@ class Main
       when 9
         train_move
       when 10
-        station_browse
+        station_overview
+      when 11
+        train_overview
       end
     end
   end
@@ -132,9 +134,13 @@ class Main
     puts 'What train You want to add car to?'
     train = train_from_list
     if train.type == 'pass'
-      train.add_car(PassCar.new)
+      puts 'How many seats?'
+      seats = gets.chomp.to_i
+      train.add_car(PassCar.new(seats: seats))
     elsif train.type == 'cargo'
-      train.add_car(CargoCar.new)
+      puts 'What size? (Volume in m3)'
+      size = gets.chomp.to_f
+      train.add_car(CargoCar.new(volume: size))
     end
   end
 
@@ -156,24 +162,65 @@ class Main
     end
   end
 
-  def self.station_browse
+# Выводим список поездов на станции
+  def self.station_overview
     puts 'Choose station to browse:'
     Station.all.each.with_index(1) do |station, number|
       puts "#{number}. #{station.name}"
     end
     station_number = gets.chomp.to_i - 1
     puts 'Following trains are at the station now:'
-    Station.all[station_number].trains.each.with_index(1) do |train, number|
-      puts "#{number}. #{train.number}"
+    Station.all[station_number].process_trains do |train|
+      puts "#{train.type.capitalize}.train No #{train.number} (#{train.cars.size} cars).\n"
     end
   end
+
+# Смотрим список вагонов, а также занимаем место в вагоне через метод occupy_car
+  def self.train_overview
+    puts 'Choose train: '
+    train = train_from_list
+    puts "#{train.type.capitalize}.train number #{train.number}, including cars:"
+    num = 1
+    if train.is_a? PassengerTrain
+      puts train.process_cars { |car|
+        puts "#{num}. Passenger wagon. Empty seats: #{car.vacant_seats}. Occupied seats: #{car.occupied_seats}"
+        num += 1
+      }
+    elsif train.is_a? CargoTrain
+      puts train.process_cars { |car|
+        puts "#{num}. Cargo wagon. Empty space: #{car.empty_volume}m3. Cargo loaded #{car.occupied_volume}m3"
+        num += 1
+      }
+    end
+    puts "\nDo You want to use any car? (y/n)"
+    answer = gets.chomp
+    if answer == 'y'
+      car_occupy train
+    end
+  end
+
+
+  def self.car_occupy train
+    puts "What car You want to use?"
+    car_number = gets.chomp.to_i
+    if train.is_a? CargoTrain
+      puts "How much cargo You want to carry?"
+      amount_of_cargo = gets.chomp.to_f
+      train.cars[car_number - 1].occupy(amount_of_cargo)
+    elsif train.is_a? PassengerTrain
+      train.cars[car_number - 1].occupy
+    end
+
+  end
+
 
   def self.train_from_list
     Train.trains.each_key.with_index(1) { |number, index| puts "#{index}. #{number}" }
     train_number = gets.chomp.to_i
     Train.trains.each_key.with_index(1) { |number, index| return Train.trains[number] if index == train_number }
   end
+
 end
 
 Main.interface
-puts PassengerTrain.instances
+

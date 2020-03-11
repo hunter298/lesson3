@@ -41,9 +41,16 @@ class Station
     return self
   end
 
+  # Принимает блок и проходит по всем поездам на станции, передавая каждый поезд в блок
+  def process_trains
+    trains.each { |train| yield(train) }
+  end
+
   def self.all
     @@stations
   end
+
+
 
   def valid?
     validate!
