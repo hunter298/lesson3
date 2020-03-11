@@ -9,9 +9,9 @@ class Station
     # Одно или два сдова с большой буквы
     @name = (name.split(' ').each { |word| word.capitalize! }.join(' '))
     @trains = []
+    validate!
     @@stations << self
     register_instance
-    validate!
   end
 
   #Список поездов на станции в данный момент

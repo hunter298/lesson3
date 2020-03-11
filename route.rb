@@ -12,9 +12,9 @@ class Route
     #Имеет список промежуточных станций
     #Точнее список всех станций включая промежуточные
     @station_list = [@first_station, @last_station]
+    validate!
     @@routes << self
     register_instance
-    validate!
   end
 
   #Может добавлять промежуточную станцию в список

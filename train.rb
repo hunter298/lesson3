@@ -12,8 +12,8 @@ class Train
     @cars = [] # cars.size to return quantity of wagons
     @speed = 0
     @route = nil
-    @@trains[number] = self
     validate!
+    @@trains[number] = self
     register_instance
   end
 

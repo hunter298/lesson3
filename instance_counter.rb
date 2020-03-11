@@ -8,8 +8,7 @@ module InstanceCounter
     attr_writer :instances
 
     def instances
-      return @instances unless @instances.nil?
-      0
+      @instances ||= 0
     end
   end
 
