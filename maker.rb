@@ -1,5 +1,6 @@
-module Maker
+# frozen_string_literal: true
 
+module Maker
   def maker=(name)
     self.maker_name = name
   end
@@ -9,6 +10,6 @@ module Maker
   end
 
   protected
-  attr_accessor :maker_name
 
+  attr_accessor :maker_name
 end

@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class CargoTrain < Train
-  def initialize name
+  def initialize(name)
     super
     @type = 'cargo'
   end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PassCar < Car
   attr_reader :type, :occupied_seats
 
@@ -20,4 +22,3 @@ class PassCar < Car
     end
   end
 end
-

@@ -1,12 +1,14 @@
+# frozen_string_literal: true
+
 class Train
   include Maker
   include InstanceCounter
 
-  #Может возвращать текущую скорость, кол-во вагонов
+  # Может возвращать текущую скорость, кол-во вагонов
   attr_reader :number, :route, :cars, :type
   attr_accessor :speed
 
-  #Имеет номер, тип, количество вагонов
+  # Имеет номер, тип, количество вагонов
   def initialize(number)
     @number = number
     @cars = [] # cars.size to return quantity of wagons
@@ -17,29 +19,30 @@ class Train
     register_instance
   end
 
-  #Может набирать скорость
+  # Может набирать скорость
   def accelerate
     @speed += 10
   end
 
-  #Может тормозить
+  # Может тормозить
   def break
     @speed = 0
   end
 
-  #Может прицеплять вагоны, по одному, не на ходу
+  # Может прицеплять вагоны, по одному, не на ходу
   def add_car(car)
-    if speed == 0 && car.type == self.type
+    if speed.zero? && car.type == type
       cars << car
     else
       puts 'Impossible to connect car'
     end
   end
 
-  #Может отцеплять вагоны, по одному, не на ходу
+  # Может отцеплять вагоны, по одному, не на ходу
   def remove_car(car)
     return puts 'No cars to disconnect.' if cars.empty?
-    if speed == 0
+
+    if speed.zero?
       cars.delete(car)
     else
       puts 'Impossible to disconnect car under way.'
@@ -58,7 +61,7 @@ class Train
   def move_forward
     unless current_station == route.station_list.last
       departure_station = current_station.train_depart(self)
-      puts route.station_list[route.station_list.index(departure_station) + 1].train_arrive(self)
+      route.station_list[route.station_list.index(departure_station) + 1].train_arrive(self)
     end
   end
 
@@ -76,52 +79,49 @@ class Train
   end
 
   def next_station
-    unless current_station == route.station_list.last
-      route.station_list[route.station_list.index(current_station) + 1]
+    if current_station == route.station_list.last
+      puts 'End of route'
     else
-      puts "End of route"
+      route.station_list[route.station_list.index(current_station) + 1]
     end
   end
 
   def previous_station
-    unless current_station == route.station_list.first
-      route.station_list[route.station_list.index(current_station) - 1]
+    if current_station == route.station_list.first
+      puts 'Begin of route'
     else
-      puts "Begin of route"
+      route.station_list[route.station_list.index(current_station) - 1]
     end
   end
 
   # Принимает номер и возвращает обьект поезд с таким номером или nil если такого не существует
-  def self.find search_number
-    return @@trains[search_number]
+  def self.find(search_number)
+    @@trains[search_number]
   end
 
   def valid?
     validate!
     true
-  rescue
+  rescue StandardError
     false
   end
-
 
   # Принимает блок и проходит по всем вагонам поезда, передавая каждый вагон в блок
   def each_car
     cars.each { |car| yield(car) }
-    nil
   end
 
   protected
 
   @@trains = {}
 
-  NUMBER_FORMAT = /^\w{3}-?\w{2}$/
+  NUMBER_FORMAT = /^\w{3}-?\w{2}$/.freeze
 
   def validate!
-    raise "Wrong format! Should be XXX-XX" if number !~ NUMBER_FORMAT
+    raise 'Wrong format! Should be XXX-XX' if number !~ NUMBER_FORMAT
   end
 
   def self.trains
     @@trains
   end
 end
-

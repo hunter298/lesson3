@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CargoCar < Car
   attr_reader :type, :occupied_volume
 
@@ -20,4 +22,3 @@ class CargoCar < Car
     end
   end
 end
-
