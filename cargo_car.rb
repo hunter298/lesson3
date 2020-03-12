@@ -1,7 +1,7 @@
 class CargoCar < Car
   attr_reader :type, :occupied_volume
 
-  def initialize params
+  def initialize(params)
     super
     @type = 'cargo'
     @volume = params[:volume]

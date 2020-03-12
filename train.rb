@@ -105,7 +105,7 @@ class Train
 
 
   # Принимает блок и проходит по всем вагонам поезда, передавая каждый вагон в блок
-  def process_cars
+  def each_car
     cars.each { |car| yield(car) }
     nil
   end

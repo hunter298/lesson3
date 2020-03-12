@@ -170,7 +170,7 @@ class Main
     end
     station_number = gets.chomp.to_i - 1
     puts 'Following trains are at the station now:'
-    Station.all[station_number].process_trains do |train|
+    Station.all[station_number].each_train do |train|
       puts "#{train.type.capitalize}.train No #{train.number} (#{train.cars.size} cars).\n"
     end
   end
@@ -182,12 +182,12 @@ class Main
     puts "#{train.type.capitalize}.train number #{train.number}, including cars:"
     num = 1
     if train.is_a? PassengerTrain
-      puts train.process_cars { |car|
+      puts train.each_car { |car|
         puts "#{num}. Passenger wagon. Empty seats: #{car.vacant_seats}. Occupied seats: #{car.occupied_seats}"
         num += 1
       }
     elsif train.is_a? CargoTrain
-      puts train.process_cars { |car|
+      puts train.each_car { |car|
         puts "#{num}. Cargo wagon. Empty space: #{car.empty_volume}m3. Cargo loaded #{car.occupied_volume}m3"
         num += 1
       }
