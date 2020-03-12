@@ -158,6 +158,13 @@ module Main
       puts 'Choose train: '
       train = train_from_list
       puts "#{train.type.capitalize}.train number #{train.number}, including cars:"
+      train_details train
+      puts "\nDo You want to use any car? (y/n)"
+      answer = gets.chomp
+      car_occupy train if answer == 'y'
+    end
+
+    def train_details train
       num = 1
       if train.is_a? PassengerTrain
         train.each_car do |car|
@@ -172,9 +179,6 @@ module Main
           num += 1
         end
       end
-      puts "\nDo You want to use any car? (y/n)"
-      answer = gets.chomp
-      car_occupy train if answer == 'y'
     end
 
     def car_occupy(train)
