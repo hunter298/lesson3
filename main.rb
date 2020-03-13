@@ -27,7 +27,7 @@ module Main
         puts 'What would You like to do?'
         OPTIONS.each { |num, opt| puts "#{num}. #{opt.gsub('_', ' ')}" }
         puts 'Enter "exit" to close program'
-        (user_input = gets.chomp) == 'exit' ? abort('Bye!') : send(OPTIONS[user_input.to_i])
+        (user_input = gets.chomp) == 'exit' ? break : send(OPTIONS[user_input.to_i])
       end
     end
 
@@ -55,71 +55,56 @@ module Main
     end
 
     def create_route
-      puts 'Choose first station:'
-      Station.all.each.with_index(1) { |stn, num| puts "#{num}. #{stn.name}" }
-      first_stn_num = gets.chomp.to_i
-      puts 'Choose last station:'
-      Station.all.each.with_index(1) do |stn, num|
-        puts "#{num}. #{stn.name}" if num != first_stn_num
-      end
-      last_stn_num = gets.chomp.to_i
-      Route.new(Station.all[first_stn_num - 1], Station.all[last_stn_num - 1])
+      first_station = choose_station
+      last_station = choose_station([first_station])
+      Route.new(first_station, last_station)
       puts "Route created!\n\n"
     end
 
-    def route_add_station
+    def choose_station(already_chosen = [])
+      already_chosen.empty? ? (puts 'Choose station:') : (puts 'Choose another station:')
+      (all_stations = Station.all).each.with_index(1) do |stn, num|
+        puts "#{num}. #{stn.name}" unless already_chosen.include?(stn)
+      end
+      station_num = gets.chomp.to_i
+      all_stations[station_num - 1]
+    end
+
+    def choose_route
       puts 'Choose route:'
-      Route.routes.each.with_index(1) do |route, number|
+      (all_routes = Route.routes).each.with_index(1) do |route, number|
         puts "#{number}. #{route.first_station.name} - #{route.last_station.name}"
       end
-      route_number = gets.chomp.to_i - 1
-      puts 'Choose station to add:'
-      Station.all.each.with_index(1) do |station, number|
-        unless Route.routes[route_number].station_list.include?(station)
-          puts "#{number}. #{station.name}"
-        end
-      end
-      station_number = gets.chomp.to_i - 1
-      Route.routes[route_number].add_interim_station(Station.all[station_number])
+      all_routes[gets.chomp.to_i - 1]
+    end
+
+    def route_add_station
+      route = choose_route
+      new_station = choose_station(route.station_list)
+      route.add_interim_station(new_station)
     end
 
     def route_remove_station
-      puts 'Choose route:'
-      Route.routes.each.with_index(1) do |route, number|
-        puts "#{number}. #{route.first_station.name} - #{route.last_station.name}"
-      end
-      route_num = gets.chomp.to_i - 1
+      route = choose_route
       puts 'Choose station to remove:'
-      Route.routes[route_num].station_list.each.with_index(1) do |stn, num|
+      route.station_list.each.with_index(1) do |stn, num|
         puts "#{num}. #{stn.name}"
       end
       station_num = gets.chomp.to_i - 1
-      Route.routes[route_num].remove_station(Route.routes[route_num].station_list[station_num])
+      route.remove_station(route.station_list[station_num])
     end
 
     def train_to_route
-      puts 'What train You want to assign?'
       train = train_from_list
-      puts 'On which route?'
-      Route.routes.each.with_index(1) do |route, number|
-        puts "#{number}. #{route.first_station.name} - #{route.last_station.name}"
-      end
-      route_number = gets.chomp.to_i - 1
-      train.take_route(Route.routes[route_number])
+      route = choose_route
+      train.take_route(route)
     end
 
     def train_add_car
-      puts 'What train You want to add car to?'
       train = train_from_list
-      if train.type == 'pass'
-        puts 'How many seats?'
-        seats = gets.chomp.to_i
-        train.add_car(PassCar.new(seats: seats))
-      elsif train.type == 'cargo'
-        puts 'What size? (Volume in m3)'
-        size = gets.chomp.to_f
-        train.add_car(CargoCar.new(volume: size))
-      end
+      (type = train.type == 'pass') ? (puts 'How many seats?') : (puts 'What size? (Volume in m3)')
+      input = gets.chomp
+      type ? train.add_car(PassCar.new(seats: input.to_i)) : train.add_car(CargoCar.new(volume: input.to_f))
     end
 
     def train_remove_car
@@ -142,62 +127,61 @@ module Main
 
     # Выводим список поездов на станции
     def station_overview
-      puts 'Choose station to browse:'
-      Station.all.each.with_index(1) do |station, number|
-        puts "#{number}. #{station.name}"
-      end
-      station_number = gets.chomp.to_i - 1
+      station = choose_station
       puts 'Following trains are at the station now:'
-      Station.all[station_number].each_train do |train|
+      station.each_train do |train|
         puts "#{train.type}.train No #{train.number} (#{train.cars.size} cars)."
       end
     end
 
     # Смотрим список вагонов, а также занимаем место в вагоне через метод occupy_car
     def train_overview
-      puts 'Choose train: '
       train = train_from_list
-      puts "#{train.type.capitalize}.train number #{train.number}, including cars:"
+      puts "#{train.type.capitalize}.train No #{train.number}, including cars:"
       train_details train
       puts "\nDo You want to use any car? (y/n)"
       answer = gets.chomp
-      car_occupy train if answer == 'y'
+      car_occupy(train) if answer == 'y'
     end
 
-    def train_details train
+    def train_details(train)
       num = 1
       if train.is_a? PassengerTrain
         train.each_car do |car|
-          puts "#{num}. Passenger wagon. Empty seats: #{car.vacant_seats}."\
-          " Occupied seats: #{car.occupied_seats}"
+          puts "#{num}. Passenger wagon. Empty seats: #{car.vacant_seats}. Occupied seats: #{car.occupied_seats}"
           num += 1
         end
-      elsif train.is_a? CargoTrain
+      else
         train.each_car do |car|
-          puts "#{num}. Cargo wagon. Empty space: #{car.empty_volume}m3."\
-          " Cargo loaded #{car.occupied_volume}m3"
+          puts "#{num}. Cargo wagon. Empty space: #{car.empty_volume}m3. Cargo loaded #{car.occupied_volume}m3"
           num += 1
         end
       end
     end
 
-    def car_occupy(train)
+    def choose_car(train)
       puts 'What car You want to use?'
       car_number = gets.chomp.to_i
+      train.cars[car_number - 1]
+    end
+
+    def car_occupy(train)
+      car = choose_car(train)
       if train.is_a? CargoTrain
         puts 'How much cargo You want to carry?'
         amount_of_cargo = gets.chomp.to_f
-        train.cars[car_number - 1].occupy(amount_of_cargo)
+        car.occupy(amount_of_cargo)
       elsif train.is_a? PassengerTrain
-        train.cars[car_number - 1].occupy
+        car.occupy
       end
     end
 
     def train_from_list
+      puts 'Choose train:'
       Train.trains.each_key.with_index(1) { |num, ind| puts "#{ind}. #{num}" }
-      train_number = gets.chomp.to_i
+      input_number = gets.chomp.to_i
       Train.trains.each_key.with_index(1) do |number, index|
-        return Train.trains[number] if index == train_number
+        return Train.trains[number] if index == input_number
       end
     end
   end

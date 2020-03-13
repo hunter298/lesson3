@@ -8,6 +8,8 @@ class Train
   attr_reader :number, :route, :cars, :type
   attr_accessor :speed
 
+  @@trains = {}
+
   # Имеет номер, тип, количество вагонов
   def initialize(number)
     @number = number
@@ -49,6 +51,10 @@ class Train
     end
   end
 
+  def self.trains
+    @@trains
+  end
+
   # Может принимать маршрут следования
   # Не заводил переменную экземпляра @position в конструкторе так как она
   # все равно не работает, если не задан маршрут
@@ -59,18 +65,18 @@ class Train
 
   # Может перемещаться вперед
   def move_forward
-    unless current_station == route.station_list.last
-      departure_station = current_station.train_depart(self)
-      route.station_list[route.station_list.index(departure_station) + 1].train_arrive(self)
-    end
+    return if current_station == route.station_list.last
+
+    departure_station = current_station.train_depart(self)
+    route.station_list[route.station_list.index(departure_station) + 1].train_arrive(self)
   end
 
   # Может перемещаться назад
   def move_backward
-    unless current_station == route.station_list.first
-      departure_station = current_station.train_depart(self)
-      puts route.station_list[route.station_list.index(departure_station) - 1].train_arrive(self)
-    end
+    return if current_station == route.station_list.first
+
+    departure_station = current_station.train_depart(self)
+    route.station_list[route.station_list.index(departure_station) - 1].train_arrive(self)
   end
 
   # Может возвращать текущую позицию
@@ -113,15 +119,9 @@ class Train
 
   protected
 
-  @@trains = {}
-
   NUMBER_FORMAT = /^\w{3}-?\w{2}$/.freeze
 
   def validate!
     raise 'Wrong format! Should be XXX-XX' if number !~ NUMBER_FORMAT
-  end
-
-  def self.trains
-    @@trains
   end
 end

@@ -35,6 +35,10 @@ class Route
     station_list.each.with_index(1) { |station, index| puts "#{index}. #{station.name}" }
   end
 
+  def name
+    "#{first_station.name} - #{last_station.name}"
+  end
+
   def self.routes
     @@routes
   end
@@ -49,8 +53,8 @@ class Route
   protected
 
   def validate!
-    unless (first_station.is_a? Station) && (last_station.is_a? Station)
-      raise 'Route can be created only between two Stations!'
-    end
+    return if (first_station.is_a? Station) && (last_station.is_a? Station)
+
+    raise 'Route can be created only between two Stations!'
   end
 end
