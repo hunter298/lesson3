@@ -2,8 +2,12 @@
 
 class Station
   include InstanceCounter
+  include Validation
+  extend Accessors
 
-  attr_reader :name, :route, :trains, :all
+  attr_reader :name, :trains
+  # attr_accessor_with_history :name
+  strong_accessor id: Integer
 
   @@stations = []
 
@@ -11,7 +15,7 @@ class Station
     # Одно или два сдова с большой буквы
     @name = name.split(' ').each(&:capitalize!).join(' ')
     @trains = []
-    validate!
+    validate!(:name, :presence, format: STATION_FORMAT)
     @@stations << self
     register_instance
   end
@@ -53,20 +57,14 @@ class Station
   end
 
   def valid?
-    validate!
+    validate!(:name, :presence, format: STATION_FORMAT)
     true
-  rescue StandardError
+  rescue
     false
   end
 
   protected
 
   # Название станции из одного или двух слов
-  STATION_FORMAT = /^[a-zA-Z]+\s?[a-zA-Z]*$/.freeze
-
-  def validate!
-    raise 'Only letters!' if name =~ /\d/
-    raise 'Too long! 15 letters max.' if name.length > 15
-    raise 'Wrong format! 1 or 2 words, only letter.' if name !~ STATION_FORMAT
-  end
+  STATION_FORMAT = '/^[a-zA-Z]+\s?[a-zA-Z]*$/'
 end

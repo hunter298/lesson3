@@ -1,6 +1,6 @@
-# frozen_string_literal: true
-
 require_relative 'instance_counter'
+require_relative 'accessors'
+require_relative 'validation'
 require_relative 'maker'
 require_relative 'station'
 require_relative 'train'
@@ -10,6 +10,8 @@ require_relative 'cargo_train'
 require_relative 'pass_car'
 require_relative 'cargo_car'
 require_relative 'route'
+require_relative 'accessors'
+require_relative 'validation'
 
 module Main
   OPTIONS = {
@@ -186,5 +188,3 @@ module Main
     end
   end
 end
-
-Main.interface

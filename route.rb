@@ -2,8 +2,12 @@
 
 class Route
   include InstanceCounter
+  include Validation
+  extend Accessors
 
   attr_reader :first_station, :last_station, :station_list
+  # attr_accessor_with_history :first_station, :last_station
+  strong_accessor id: Integer
 
   @@routes = []
 
@@ -14,7 +18,8 @@ class Route
     # Имеет список промежуточных станций
     # Точнее список всех станций включая промежуточные
     @station_list = [@first_station, @last_station]
-    validate!
+    validate!(:first_station, :presence,type: Station)
+    validate!(:last_station, :presence,type: Station)
     @@routes << self
     register_instance
   end
@@ -44,17 +49,11 @@ class Route
   end
 
   def valid?
-    validate!
+    validate!(:first_station, :presence, type: Station)
+    validate!(:last_station,:presence, type: Station)
     true
   rescue StandardError
     false
   end
 
-  protected
-
-  def validate!
-    return if (first_station.is_a? Station) && (last_station.is_a? Station)
-
-    raise 'Route can be created only between two Stations!'
-  end
 end

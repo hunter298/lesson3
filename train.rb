@@ -3,10 +3,13 @@
 class Train
   include Maker
   include InstanceCounter
+  extend Accessors
+  include Validation
 
   # Может возвращать текущую скорость, кол-во вагонов
   attr_reader :number, :route, :cars, :type
-  attr_accessor :speed
+  attr_accessor_with_history :speed
+  strong_accessor id: Integer
 
   @@trains = {}
 
@@ -16,7 +19,7 @@ class Train
     @cars = [] # cars.size to return quantity of wagons
     @speed = 0
     @route = nil
-    validate!
+    validate!(:number, :presence, format: NUMBER_FORMAT)
     @@trains[number] = self
     register_instance
   end
@@ -106,9 +109,9 @@ class Train
   end
 
   def valid?
-    validate!
+    validate!(:number, :presence, format: NUMBER_FORMAT)
     true
-  rescue StandardError
+  rescue
     false
   end
 
@@ -119,9 +122,6 @@ class Train
 
   protected
 
-  NUMBER_FORMAT = /^\w{3}-?\w{2}$/.freeze
+  NUMBER_FORMAT = '/^\w{3}-?\w{2}$/'
 
-  def validate!
-    raise 'Wrong format! Should be XXX-XX' if number !~ NUMBER_FORMAT
-  end
 end

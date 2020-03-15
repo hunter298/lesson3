@@ -1,15 +1,7 @@
 # frozen_string_literal: true
 
 module Maker
-  def maker=(name)
-    self.maker_name = name
-  end
+  extend Accessors
 
-  def maker
-    maker_name
-  end
-
-  protected
-
-  attr_accessor :maker_name
+  attr_accessor_with_history :maker
 end
