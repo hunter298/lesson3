@@ -7,9 +7,10 @@ class Train
   include Validation
 
   # Может возвращать текущую скорость, кол-во вагонов
-  attr_reader :number, :route, :cars, :type
+  attr_reader :number, :route, :cars
   attr_accessor_with_history :speed
   strong_accessor id: Integer
+  validate :number, :format, /^\w{3}-?\w{2}$/
 
   @@trains = {}
 
@@ -19,7 +20,7 @@ class Train
     @cars = [] # cars.size to return quantity of wagons
     @speed = 0
     @route = nil
-    validate!(:number, :presence, format: NUMBER_FORMAT)
+    validate!
     @@trains[number] = self
     register_instance
   end
