@@ -188,3 +188,7 @@ module Main
     end
   end
 end
+
+Main.interface
+
+Route.routes[0].station_list[0].validate!

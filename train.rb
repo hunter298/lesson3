@@ -10,7 +10,7 @@ class Train
   attr_reader :number, :route, :cars
   attr_accessor_with_history :speed
   strong_accessor id: Integer
-  validate :number, :format, /^\w{3}-?\w{2}$/
+  validate :number, :format, '^\w{3}-?\w{2}$'
 
   @@trains = {}
 

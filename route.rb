@@ -8,6 +8,8 @@ class Route
   attr_reader :first_station, :last_station, :station_list
   # attr_accessor_with_history :first_station, :last_station
   strong_accessor id: Integer
+  validate :first_station, :type, Station
+  validate :last_station, :type, Station
 
   @@routes = []
 
@@ -18,8 +20,7 @@ class Route
     # Имеет список промежуточных станций
     # Точнее список всех станций включая промежуточные
     @station_list = [@first_station, @last_station]
-    validate!(:first_station, :presence,type: Station)
-    validate!(:last_station, :presence,type: Station)
+    validate!
     @@routes << self
     register_instance
   end
@@ -49,8 +50,7 @@ class Route
   end
 
   def valid?
-    validate!(:first_station, :presence, type: Station)
-    validate!(:last_station,:presence, type: Station)
+    validate!
     true
   rescue StandardError
     false

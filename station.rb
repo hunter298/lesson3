@@ -8,14 +8,15 @@ class Station
   attr_reader :name, :trains
   # attr_accessor_with_history :name
   strong_accessor id: Integer
+  validate :name, :format, '^[a-zA-Z]+\s?[a-zA-Z]*$'
 
   @@stations = []
 
   def initialize(name)
     # Одно или два сдова с большой буквы
-    @name = name.split(' ').each(&:capitalize!).join(' ')
+    @name = name
     @trains = []
-    validate!(:name, :presence, format: STATION_FORMAT)
+    validate!
     @@stations << self
     register_instance
   end
@@ -57,14 +58,10 @@ class Station
   end
 
   def valid?
-    validate!(:name, :presence, format: STATION_FORMAT)
+    validate!
     true
   rescue
     false
   end
 
-  protected
-
-  # Название станции из одного или двух слов
-  STATION_FORMAT = '/^[a-zA-Z]+\s?[a-zA-Z]*$/'
 end
