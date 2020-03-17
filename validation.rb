@@ -5,16 +5,18 @@ module Validation
   end
 
   module ClassMethods
-    def validate(attr, vaidation_type, *param)
-      error = case vaidation_type
-              when :presence
-                'Presence Validation' if attr == '' || attr.nil?
-              when :type
-                'Type Validation' if attr.class != param.first
-              when :format
-                'Format Validation' if attr.to_s !~ param.first
-              end
-      error
+    attr_accessor :validations
+
+    def validate(attr, validation_type, param = 'true')
+      @validations ||= []
+      case validation_type
+      when :presence
+        @validations << "raise 'Presence Validation Failed' if #{attr}.nil? || #{attr}.eql?('')"
+      when :format
+        @validations << "raise 'Format Validation Failed' if #{attr} !~ #{param}"
+      when :type
+        @validations << "raise 'Type Validation Failed' if #{attr}.class != #{param}"
+      end
     end
   end
 
@@ -23,19 +25,10 @@ module Validation
     # После названия объекта :object, вводятся поочередно виды проверок (:presence, :format, :type),
     # Проверки с параметром вводятся в виде хеша (type: String, format: '/\w+\d*/'
     # Параметры после названия обьекта вводятся в любом порядке
-    def validate!(object, *validations)
-      errors = []
-      validations.each do |validation|
-        obj_name = "self.#{object}"
-        if validation.is_a? Symbol
-          errors << eval("self.class.validate(#{obj_name}, :#{validation})")
-        else
-          validation.each do |valid, param|
-          errors << eval("self.class.validate(#{obj_name}, :#{valid}, #{param})")
-          end
-        end
+    def validate!
+      self.class.instance_variable_get(:@validations).each do |validation|
+        eval(validation)
       end
-      raise("Following validations failed: #{errors.compact.join(', ')}") unless errors.compact.empty?
     end
   end
 end
