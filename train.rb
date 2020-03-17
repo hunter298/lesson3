@@ -10,6 +10,7 @@ class Train
   attr_reader :number, :route, :cars
   attr_accessor_with_history :speed
   strong_accessor id: Integer
+  validate :number, :presence
   validate :number, :format, '^\w{3}-?\w{2}$'
 
   @@trains = {}
@@ -110,9 +111,9 @@ class Train
   end
 
   def valid?
-    validate!(:number, :presence, format: NUMBER_FORMAT)
+    validate!
     true
-  rescue
+  rescue StandardError
     false
   end
 

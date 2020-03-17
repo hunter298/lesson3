@@ -8,6 +8,7 @@ class Station
   attr_reader :name, :trains
   # attr_accessor_with_history :name
   strong_accessor id: Integer
+  validate :name, :presence
   validate :name, :format, '^[a-zA-Z]+\s?[a-zA-Z]*$'
 
   @@stations = []
@@ -60,7 +61,7 @@ class Station
   def valid?
     validate!
     true
-  rescue
+  rescue StandardError
     false
   end
 
