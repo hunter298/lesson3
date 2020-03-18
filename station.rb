@@ -5,11 +5,11 @@ class Station
   include Validation
   extend Accessors
 
-  attr_reader :name, :trains
+  attr_accessor :name, :trains
   # attr_accessor_with_history :name
   strong_accessor id: Integer
   validate :name, :presence
-  validate :name, :format, '^[a-zA-Z]+\s?[a-zA-Z]*$'
+  validate :name, :format, /^[a-zA-Z]+\s?[a-zA-Z]*$/
 
   @@stations = []
 
